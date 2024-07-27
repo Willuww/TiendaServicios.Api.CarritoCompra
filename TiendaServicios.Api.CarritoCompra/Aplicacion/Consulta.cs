@@ -1,5 +1,9 @@
 ﻿using MediatR;
+using Microsoft.EntityFrameworkCore;
 using System.Runtime.CompilerServices;
+using TiendaServicios.Api.CarritoCompra.Persistencia;
+using TiendaServicios.Api.CarritoCompra.RemoteInterface;
+using TiendaServicios.Api.CarritoCompra.RemoteModel;
 
 namespace TiendaServicios.Api.CarritoCompra.Aplicacion
 {
@@ -24,13 +28,12 @@ namespace TiendaServicios.Api.CarritoCompra.Aplicacion
             public async Task<CarritoDto> Handle(Ejecuta request,
                 CancellationToken cancellationToken)
             {
-                //obtenemos el carrito almacenado en la base de datos pasando el
-                var carritoSesion = await carritoContexto.CarritoSesiones.
-                    FirstOrDefault(x => x.CarritoSesionId ==
+                //Ontenemos el carrito almacenado en la base de datos pasando el 
+                var carritoSesion = await carritoContexto.CarritoSesiones.FirstOrDefaultAsync(x => x.CarritoSesionId ==
                     request.CarritoSessionId);
-                //devuelve la lista de productos detalle solo para conocel el detalle
+                //Devuelce la lista de producto detalle solo para conocer el
                 var carritoSessionDetalle = await carritoContexto.
-                    CarritoSesionDetall.Where(x => x.CarritoSesionId ==
+                    CarritoSesionDetalle.Where(x => x.CarritoSesionId ==
                     request.CarritoSessionId).ToListAsync();
 
                 var listaCarritoDto = new List<CarritoDetalleDdto>();
@@ -46,7 +49,7 @@ namespace TiendaServicios.Api.CarritoCompra.Aplicacion
                         var objetoLibro = response.Libro; //retorno un libroRemo
                         var carritoDetalle = new CarritoDetalleDdto
                         {
-                            TituloLibro = objetoLibro.TituloLibro,
+                            TituloLibro = objetoLibro.Titulo,
                             FechaPublicacion = objetoLibro.FechaPublicacion,
                             LibroId = objetoLibro.LibreriaMateriaId
                         };
@@ -57,7 +60,7 @@ namespace TiendaServicios.Api.CarritoCompra.Aplicacion
                 var carritoSessionDto = new CarritoDto
                 {
                     CarritoId = carritoSesion.CarritoSesionId,
-                    DechaCreacionSesion = carritoSesion.FechaCreacion,
+                    FechaCreacionSesion = carritoSesion.FechaCreacion,
                     LlistaDeProductos = listaCarritoDto
                 };
                 return carritoSessionDto;
